@@ -6,7 +6,7 @@
 1. Docker
 
 ### Running the App
-**NOTE**: make sure docker engine is set to `linux`
+**NOTE**: make sure docker engine is set to `linux`  
 [Set up Linux Containers on Windows 10](https://learn.microsoft.com/en-us/virtualization/windowscontainers/quick-start/quick-start-windows-10-linux)
 
 Here are the steps for running the app:
@@ -51,8 +51,5 @@ This diagram shows how authors and books are related, the connection between the
     - Get All Authors (Admin & User)
     - Get Book by Id (Admin & User)
     - Get Author by Id (Admin & User)
-    - Delete Resource (Admin), type = hard and soft
-        - Soft Delete Author (Admin), Cascade soft delete
-        - Soft Delete Book (Admin), Cascade soft delete
-        - Hard Delete Author (Admin), Cascade hard delete
-        - Hard Delete Book (Admin), Cascade hard delete
+    - Delete Author (Admin), Cascade delete
+    - Delete Book (Admin), Cascade delete
