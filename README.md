@@ -14,12 +14,12 @@ Here are the steps for running the app:
 2. Run docker compose, `docker compose up --build -d`
 
 ### DB Credentials
-The credentials for the pgadmin service is:  
-Email: `admin@example.com`
+Credentials for pgadmin service:  
+Email: `admin@example.com`  
 Password: `admin`
 
-The credentials for db service  
-Username: `postgres`
+Credentials for db service:  
+Username: `postgres`  
 Password: `securepassword`
 
 ## Documentation 
