@@ -6,7 +6,7 @@
 1. Docker
 
 ### Running the App
-NOTE: make sure docker engine is set to `linux`
+**NOTE**: make sure docker engine is set to `linux`
 [Set up Linux Containers on Windows 10](https://learn.microsoft.com/en-us/virtualization/windowscontainers/quick-start/quick-start-windows-10-linux)
 
 Here are the steps for running the app:
@@ -14,11 +14,11 @@ Here are the steps for running the app:
 2. Run docker compose, `docker compose up --build -d`
 
 ### DB Credentials
-The credentials for the pgadmin service is
+The credentials for the pgadmin service is:  
 Email: `admin@example.com`
 Password: `admin`
 
-The credentials for db service
+The credentials for db service  
 Username: `postgres`
 Password: `securepassword`
 
