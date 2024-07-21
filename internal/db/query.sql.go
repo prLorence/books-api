@@ -9,6 +9,26 @@ import (
 	"context"
 )
 
+const authorExists = `-- name: AuthorExists :exec
+SELECT EXISTS(
+SELECT true FROM authors WHERE name=$1)
+`
+
+func (q *Queries) AuthorExists(ctx context.Context, name string) error {
+	_, err := q.db.Exec(ctx, authorExists, name)
+	return err
+}
+
+const bookExists = `-- name: BookExists :exec
+SELECT EXISTS(
+SELECT true FROM books WHERE title=$1)
+`
+
+func (q *Queries) BookExists(ctx context.Context, title string) error {
+	_, err := q.db.Exec(ctx, bookExists, title)
+	return err
+}
+
 const deleteAuthor = `-- name: DeleteAuthor :exec
 DELETE FROM authors
 WHERE id=$1

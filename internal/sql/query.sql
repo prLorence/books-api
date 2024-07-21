@@ -16,6 +16,10 @@ UPDATE authors
 SET name=$2
 WHERE id=$1;
 
+-- name: AuthorExists :exec
+SELECT EXISTS(
+SELECT true FROM authors WHERE name=$1);
+
 -- name: DeleteAuthor :exec
 DELETE FROM authors
 WHERE id=$1;
@@ -37,6 +41,10 @@ RETURNING *;
 UPDATE books
 SET title=$2, description=$3
 WHERE id=$1;
+
+-- name: BookExists :exec
+SELECT EXISTS(
+SELECT true FROM books WHERE title=$1);
 
 -- name: DeleteBook :exec
 DELETE FROM books
