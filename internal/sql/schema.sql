@@ -27,5 +27,5 @@ CREATE TABLE IF NOT EXISTS Books (
     author_id INT NOT NULL,
     title VARCHAR(50) NOT NULL,
     description VARCHAR(100) NOT NULL,
-    CONSTRAINT fk_author FOREIGN KEY (author_id) REFERENCES Authors(id)
+    CONSTRAINT fk_author FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE;
 )
