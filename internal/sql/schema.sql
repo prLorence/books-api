@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS Users (
     id SERIAL PRIMARY KEY,
     user_name VARCHAR(50) NOT NULL,
-    password_hash VARCHAR(60) NOT NULL,
+    password_hash VARCHAR(60) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Roles (
@@ -20,12 +20,12 @@ CREATE TABLE IF NOT EXISTS UserRoles (
 CREATE TABLE IF NOT EXISTS Authors (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL
-)
+);
 
 CREATE TABLE IF NOT EXISTS Books (
     id SERIAL PRIMARY KEY,
     author_id INT NOT NULL,
     title VARCHAR(50) NOT NULL,
     description VARCHAR(100) NOT NULL,
-    CONSTRAINT fk_author FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE;
-)
+    CONSTRAINT fk_author FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE
+);

@@ -1,4 +1,3 @@
--- name: 
 -- name: GetAuthors :many
 SELECT * FROM authors
 ORDER BY id;
@@ -34,7 +33,7 @@ INSERT INTO books (author_id, title, description)
 VALUES ($1, $2, $3)
 RETURNING *;
 
--- name: UpdateBook :one
+-- name: UpdateBook :exec
 UPDATE books
 SET title=$2, description=$3
 WHERE id=$1;
