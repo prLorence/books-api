@@ -43,13 +43,53 @@ This diagram shows how authors and books are related,
 the connection between them is a one-to-many relationship, i.e. an author can have many books
 
 ### Endpoints
+
+#### Authors 
+<details>
+    <summary> Create Author </summary>
+    `POST /authors`  
+    ```
+    {
+        "name": string
+    }
+    ```
+</details>
+
+<details>
+    <summary> Get Authors </summary>
+    `GET /authors`  
+</details>
+
+<details>
+    <summary> Get Author by ID </summary>
+    `GET /authors/:id`  
+</details>
+
+<details>
+    <summary> Update Author </summary>
+    `PUT /authors/:id`  
+    ```
+    {
+        "name" string
+    }
+    ```
+</details>
+
+<details>
+    <summary> Remove Author </summary>
+    `DELETE /authors/:id`  
+</details>
+
+#### Books
+
+#### Users
+
+
+TODO:
 - Login (All Users)
 - Logout (All Users)
 - Create Book (Admin)
-- Create Author (Admin)
-- Get All Books (Admin & User)
-- Get All Authors (Admin & User)
 - Get Book by Id (Admin & User)
-- Get Author by Id (Admin & User)
-- Delete Author (Admin), Cascade delete
+- Get Books (Admin & User)
+- Update Book by Id (Admin)
 - Delete Book (Admin), Cascade delete
