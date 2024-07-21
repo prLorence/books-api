@@ -43,3 +43,24 @@ WHERE id=$1;
 DELETE FROM books
 WHERE id=$1;
 
+-- name: SeedRoles :exec
+INSERT INTO roles (name)
+VALUES ('admin'), ('user')
+ON CONFLICT DO NOTHING;
+
+-- name: UserExists :one
+SELECT EXISTS(
+SELECT true FROM users WHERE user_name=$1);
+
+-- name: GetUserHash :one
+SELECT password_hash FROM users
+WHERE id=$1;
+
+-- name: IsAdmin :one
+SELECT EXISTS (
+    SELECT 1
+    FROM UserRoles ur
+    JOIN Roles r ON ur.role_id = r.id
+    WHERE ur.user_id = $1
+    AND r.name = 'admin'
+) AS has_admin_role;
