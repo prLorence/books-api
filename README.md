@@ -28,7 +28,7 @@ Password: `securepassword`
 This sections provides information on the Entity Relationships present in the API
 
 #### Users
-![](./docs/img/user-roles-er.png)
+![](./docs/img/user-roles.png)
 
 This diagram shows how users and roles are related, 
 The `UserRoles` table is an example of a junction table, 
@@ -37,7 +37,7 @@ In this case, we will not perform many-to-many relationship transactions.
 `UserRoles` had to be specifically used for normalization purposes.
 
 #### Authors and Books
-![](./docs/img/author-books-er.png)
+![](./docs/img/author-books.png)
 
 This diagram shows how authors and books are related,
 the connection between them is a one-to-many relationship, i.e. an author can have many books
