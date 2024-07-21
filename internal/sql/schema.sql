@@ -1,9 +1,7 @@
 CREATE TABLE IF NOT EXISTS Users (
     id SERIAL PRIMARY KEY,
-    user_role_id INT NOT NULL,
-    name VARCHAR(50) NOT NULL,
+    user_name VARCHAR(50) NOT NULL,
     password_hash VARCHAR(60) NOT NULL,
-    email VARCHAR(50) NOT NULL,
 );
 
 CREATE TABLE IF NOT EXISTS Roles (
@@ -31,4 +29,3 @@ CREATE TABLE IF NOT EXISTS Books (
     description VARCHAR(100) NOT NULL,
     CONSTRAINT fk_author FOREIGN KEY (author_id) REFERENCES Authors(id)
 )
-
