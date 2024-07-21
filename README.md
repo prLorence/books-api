@@ -1,15 +1,30 @@
 # Books Api in Go
 
-## Installation instructions
-- docker compose 
-- dockerfile
+## Installation
+
+### Requirements
+1. Docker
+
+### Running the App
+Here are the steps for running the app:
+1. Build the Dockerfile, `docker build --tag books-api .`
+2. Run docker compose, `docker compose up --build -d`
+
+### DB Credentials
+The credentials for the pgadmin service is
+Email: `admin@example.com`
+Password: `admin`
+
+The credentials for db service
+Username: `postgres`
+Password: `securepassword`
 
 ## Documentation 
 
 ### ER diagram
 This sections provides information on the Entity Relationships present in the API
 
-#### User
+#### Users
 ![](./docs/img/user-roles-er.png)
 
 This diagram shows how users and roles are related, 
