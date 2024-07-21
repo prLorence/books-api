@@ -6,6 +6,9 @@
 1. Docker
 
 ### Running the App
+NOTE: make sure docker engine is set to `linux`
+[Set up Linux Containers on Windows 10](https://learn.microsoft.com/en-us/virtualization/windowscontainers/quick-start/quick-start-windows-10-linux)
+
 Here are the steps for running the app:
 1. Build the Dockerfile, `docker build --tag books-api .`
 2. Run docker compose, `docker compose up --build -d`
