@@ -48,6 +48,7 @@ the connection between them is a one-to-many relationship, i.e. an author can ha
 <details>
     <summary> Create Author </summary>
     `POST /authors`  
+
     ```
     {
         "name": string
@@ -57,17 +58,21 @@ the connection between them is a one-to-many relationship, i.e. an author can ha
 
 <details>
     <summary> Get Authors </summary>
-    `GET /authors`  
+    
+    ```GET /authors```
 </details>
 
 <details>
     <summary> Get Author by ID </summary>
-    `GET /authors/:id`  
+
+    ```GET /authors/:id```
 </details>
 
 <details>
     <summary> Update Author </summary>
-    `PUT /authors/:id`  
+
+    ```PUT /authors/:id```
+
     ```
     {
         "name" string
@@ -77,7 +82,8 @@ the connection between them is a one-to-many relationship, i.e. an author can ha
 
 <details>
     <summary> Remove Author </summary>
-    `DELETE /authors/:id`  
+
+    ```DELETE /authors/:id```
 </details>
 
 #### Books
