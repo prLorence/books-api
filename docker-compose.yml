@@ -1,21 +1,38 @@
 version: '1'
 
 services:
+  app:
+    image: "books-api:latest"
+    container_name: 'books_api'
+    environment:
+      DB_CONN: "host=db user=postgres password=securepassword dbname=books port=5432 sslmode=disable"
+      APP_PORT: 5000
+      HOST_PORT: 5000
+    ports:
+      - 5000:5000
+    depends_on:
+      db:
+        condition: service_healthy
+
   db:
     image: 'postgres:latest'
+    container_name: 'books-db'
     ports:
       - 15432:5432
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "securepassword"
-    networks:
-      - postgres-network
     volumes:
       - ./db-data/:/var/lib/postgresql/data/
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   pgadmin:
     user: root
     image: dpage/pgadmin4
+    container_name: 'books-pgadmin'
     environment:
       PGADMIN_DEFAULT_EMAIL: "admin@example.com"
       PGADMIN_DEFAULT_PASSWORD: "admin"
@@ -26,9 +43,3 @@ services:
       - db
     volumes:
       - ./pgadmin-data/:/var/lib/pgadmin/
-    networks:
-      - postgres-network
-
-networks:
-  postgres-network:
-    driver: bridge
