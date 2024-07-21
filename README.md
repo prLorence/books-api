@@ -12,11 +12,11 @@ This sections provides information on the Entity Relationships present in the AP
 #### User
 ![](./docs/img/user-roles-er.png)
 
-This diagram shows how users and roles are related, `UserRoles` had to be specifically used for normalization purposes.
-
-Specifically, The `UserRoles` table is an example of a junction table, 
+This diagram shows how users and roles are related, 
+The `UserRoles` table is an example of a junction table, 
 which is used to implement a many-to-many relationship between the `Users` and `Roles` tables. 
 In this case, we will not perform many-to-many relationship transactions.
+`UserRoles` had to be specifically used for normalization purposes.
 
 #### Authors and Books
 ![](./docs/img/author-books-er.png)
