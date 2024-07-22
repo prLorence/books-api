@@ -14,7 +14,7 @@ import (
 // }
 
 func Routes(srv *utils.Server) {
-	authors.SetupRoutes(srv.App, srv.DB)
-	books.SetupRoutes(srv.App, srv.DB)
-	users.SetupRoutes(srv.App, srv.DB, srv.Session)
+	authors.SetupRoutes(srv)
+	books.SetupRoutes(srv)
+	users.SetupRoutes(srv)
 }
