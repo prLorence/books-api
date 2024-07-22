@@ -1,8 +1,10 @@
 package utils
 
-import "net/http"
+import (
+	"net/http"
+)
 
-func RequireAuth(next http.Handler) http.Handler {
+func (s *Server) RequireAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// get the id
 		// if id == 0, return status forbidden
@@ -19,7 +21,7 @@ func RequireAuth(next http.Handler) http.Handler {
 	})
 }
 
-func RequireAdmin(next http.Handler) http.Handler {
+func (s *Server) RequireAdmin(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// get the id
 		// if id == 0, return status forbidden
