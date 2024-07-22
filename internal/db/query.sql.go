@@ -103,6 +103,55 @@ func (q *Queries) InsertBook(ctx context.Context, arg InsertBookParams) (Book, e
 	return i, err
 }
 
+const insertRole = `-- name: InsertRole :one
+INSERT INTO roles (name)
+VALUES ($1)
+ON CONFLICT DO NOTHING
+RETURNING id
+`
+
+func (q *Queries) InsertRole(ctx context.Context, name string) (int32, error) {
+	row := q.db.QueryRow(ctx, insertRole, name)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
+}
+
+const insertUser = `-- name: InsertUser :one
+INSERT INTO users (user_name, password_hash)
+VALUES ($1, $2)
+ON CONFLICT DO NOTHING
+RETURNING id
+`
+
+type InsertUserParams struct {
+	UserName     string
+	PasswordHash string
+}
+
+func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (int32, error) {
+	row := q.db.QueryRow(ctx, insertUser, arg.UserName, arg.PasswordHash)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
+}
+
+const insertUserRole = `-- name: InsertUserRole :exec
+INSERT INTO userroles (user_id, role_id)
+VALUES ($1, $2)
+ON CONFLICT DO NOTHING
+`
+
+type InsertUserRoleParams struct {
+	UserID int32
+	RoleID int32
+}
+
+func (q *Queries) InsertUserRole(ctx context.Context, arg InsertUserRoleParams) error {
+	_, err := q.db.Exec(ctx, insertUserRole, arg.UserID, arg.RoleID)
+	return err
+}
+
 const isAdmin = `-- name: IsAdmin :one
 SELECT EXISTS (
     SELECT 1
@@ -118,49 +167,6 @@ func (q *Queries) IsAdmin(ctx context.Context, userID int32) (bool, error) {
 	var has_admin_role bool
 	err := row.Scan(&has_admin_role)
 	return has_admin_role, err
-}
-
-const seedRoles = `-- name: SeedRoles :exec
-INSERT INTO roles (name)
-VALUES ('admin'), ('user')
-ON CONFLICT DO NOTHING
-`
-
-func (q *Queries) SeedRoles(ctx context.Context) error {
-	_, err := q.db.Exec(ctx, seedRoles)
-	return err
-}
-
-const seedUserRoles = `-- name: SeedUserRoles :exec
-INSERT INTO userroles (user_id, role_id)
-VALUES ($1, $2)
-ON CONFLICT DO NOTHING
-`
-
-type SeedUserRolesParams struct {
-	UserID int32
-	RoleID int32
-}
-
-func (q *Queries) SeedUserRoles(ctx context.Context, arg SeedUserRolesParams) error {
-	_, err := q.db.Exec(ctx, seedUserRoles, arg.UserID, arg.RoleID)
-	return err
-}
-
-const seedUsers = `-- name: SeedUsers :exec
-INSERT INTO users (user_name, password_hash)
-VALUES ($1, $2)
-ON CONFLICT DO NOTHING
-`
-
-type SeedUsersParams struct {
-	UserName     string
-	PasswordHash string
-}
-
-func (q *Queries) SeedUsers(ctx context.Context, arg SeedUsersParams) error {
-	_, err := q.db.Exec(ctx, seedUsers, arg.UserName, arg.PasswordHash)
-	return err
 }
 
 const selectAuthor = `-- name: SelectAuthor :one
@@ -201,42 +207,49 @@ func (q *Queries) SelectAuthors(ctx context.Context) ([]Author, error) {
 }
 
 const selectBook = `-- name: SelectBook :one
-SELECT id, author_id, title, description FROM books
-WHERE id=$1 LIMIT 1
+SELECT b.title, b.description,
+    a.name AS author_name
+FROM Books b
+JOIN Authors a ON b.author_id = a.id
+WHERE b.id=$1 LIMIT 1
 `
 
-func (q *Queries) SelectBook(ctx context.Context, id int32) (Book, error) {
+type SelectBookRow struct {
+	Title       string
+	Description string
+	AuthorName  string
+}
+
+func (q *Queries) SelectBook(ctx context.Context, id int32) (SelectBookRow, error) {
 	row := q.db.QueryRow(ctx, selectBook, id)
-	var i Book
-	err := row.Scan(
-		&i.ID,
-		&i.AuthorID,
-		&i.Title,
-		&i.Description,
-	)
+	var i SelectBookRow
+	err := row.Scan(&i.Title, &i.Description, &i.AuthorName)
 	return i, err
 }
 
 const selectBooks = `-- name: SelectBooks :many
-SELECT id, author_id, title, description FROM books
-ORDER by title
+SELECT b.title, b.description,
+    a.name AS author_name
+FROM Books b
+JOIN Authors a ON b.author_id = a.id
 `
 
-func (q *Queries) SelectBooks(ctx context.Context) ([]Book, error) {
+type SelectBooksRow struct {
+	Title       string
+	Description string
+	AuthorName  string
+}
+
+func (q *Queries) SelectBooks(ctx context.Context) ([]SelectBooksRow, error) {
 	rows, err := q.db.Query(ctx, selectBooks)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Book
+	var items []SelectBooksRow
 	for rows.Next() {
-		var i Book
-		if err := rows.Scan(
-			&i.ID,
-			&i.AuthorID,
-			&i.Title,
-			&i.Description,
-		); err != nil {
+		var i SelectBooksRow
+		if err := rows.Scan(&i.Title, &i.Description, &i.AuthorName); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
