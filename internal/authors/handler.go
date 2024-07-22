@@ -13,15 +13,15 @@ type AuthorDto struct {
 }
 
 func Create(c *fiber.Ctx, pg *db.Queries) error {
-	a := new(AuthorDto)
+	req := new(AuthorDto)
 
-	if err := c.BodyParser(a); err != nil {
+	if err := c.BodyParser(req); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 			"errors": err.Error(),
 		})
 	}
 
-	author, err := pg.InsertAuthor(context.TODO(), a.Name)
+	author, err := pg.InsertAuthor(context.TODO(), req.Name)
 
 	if err != nil {
 		return err
@@ -70,8 +70,8 @@ func Update(c *fiber.Ctx, pg *db.Queries) error {
 		})
 	}
 
-	a := new(AuthorDto)
-	if err := c.BodyParser(a); err != nil {
+	req := new(AuthorDto)
+	if err := c.BodyParser(req); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 			"errors": err.Error(),
 		})
@@ -79,7 +79,7 @@ func Update(c *fiber.Ctx, pg *db.Queries) error {
 
 	updParams := db.UpdateAuthorParams{
 		ID:   int32(id),
-		Name: a.Name,
+		Name: req.Name,
 	}
 
 	updAuthor := pg.UpdateAuthor(context.TODO(), updParams)
