@@ -50,15 +50,20 @@ func (q *Queries) DeleteBook(ctx context.Context, id int32) error {
 }
 
 const getUserHash = `-- name: GetUserHash :one
-SELECT password_hash FROM users
-WHERE id=$1
+SELECT id, password_hash FROM users
+WHERE user_name=$1
 `
 
-func (q *Queries) GetUserHash(ctx context.Context, id int32) (string, error) {
-	row := q.db.QueryRow(ctx, getUserHash, id)
-	var password_hash string
-	err := row.Scan(&password_hash)
-	return password_hash, err
+type GetUserHashRow struct {
+	ID           int32
+	PasswordHash string
+}
+
+func (q *Queries) GetUserHash(ctx context.Context, userName string) (GetUserHashRow, error) {
+	row := q.db.QueryRow(ctx, getUserHash, userName)
+	var i GetUserHashRow
+	err := row.Scan(&i.ID, &i.PasswordHash)
+	return i, err
 }
 
 const insertAuthor = `-- name: InsertAuthor :one
@@ -257,6 +262,23 @@ func (q *Queries) SelectByTitle(ctx context.Context, title string) (Book, error)
 		&i.Description,
 	)
 	return i, err
+}
+
+const selectUser = `-- name: SelectUser :one
+SELECT id from users 
+WHERE user_name=$1 AND password_hash=$2
+`
+
+type SelectUserParams struct {
+	UserName     string
+	PasswordHash string
+}
+
+func (q *Queries) SelectUser(ctx context.Context, arg SelectUserParams) (int32, error) {
+	row := q.db.QueryRow(ctx, selectUser, arg.UserName, arg.PasswordHash)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
 }
 
 const updateAuthor = `-- name: UpdateAuthor :exec

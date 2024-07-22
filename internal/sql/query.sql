@@ -64,6 +64,10 @@ INSERT INTO users (user_name, password_hash)
 VALUES ($1, $2)
 ON CONFLICT DO NOTHING;
 
+-- name: SelectUser :one
+SELECT id from users 
+WHERE user_name=$1 AND password_hash=$2;
+
 -- name: SeedUserRoles :exec
 INSERT INTO userroles (user_id, role_id)
 VALUES ($1, $2)
@@ -74,8 +78,8 @@ SELECT EXISTS(
 SELECT true FROM users WHERE user_name=$1);
 
 -- name: GetUserHash :one
-SELECT password_hash FROM users
-WHERE id=$1;
+SELECT id, password_hash FROM users
+WHERE user_name=$1;
 
 -- name: IsAdmin :one
 SELECT EXISTS (
