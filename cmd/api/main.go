@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/prLorence/books-api/config"
@@ -19,26 +20,25 @@ import (
 // session manager
 // a seeder
 
-type Application struct {
-}
-
 func main() {
-	app := fiber.New()
-	app.Use(cors.New())
-	app.Use(utils.RequireAuth)
-	sess := session.New()
-
 	config := config.NewConfig()
 	conn, err := db.ConnectDB(config.DB_CONN)
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v\n", err)
 	}
 
-	db := db.New(conn)
+	srv := &utils.Server{
+		App:     fiber.New(),
+		DB:      db.New(conn),
+		Session: session.New(),
+	}
+	srv.App.Use(cors.New())
+	srv.App.Use(adaptor.HTTPMiddleware(srv.RequireAuth))
 
-	Routes(app, db, sess)
+	// Routes(srv.App, srv.DB, srv.Session)
+	Routes(srv)
 
 	fmt.Fprintf(os.Stdout, "Listening on host port %s", config.HOST_PORT)
-	err = app.Listen(fmt.Sprintf(":%s", config.APP_PORT))
+	err = srv.App.Listen(fmt.Sprintf(":%s", config.APP_PORT))
 	log.Fatal(err)
 }
