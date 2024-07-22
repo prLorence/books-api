@@ -1,8 +1,8 @@
--- name: GetAuthors :many
+-- name: SelectAuthors :many
 SELECT * FROM authors
 ORDER BY id;
 
--- name: GetAuthor :one
+-- name: SelectAuthor :one
 SELECT * FROM authors
 WHERE id=$1 LIMIT 1;
 
@@ -24,13 +24,17 @@ SELECT true FROM authors WHERE name=$1);
 DELETE FROM authors
 WHERE id=$1;
 
--- name: GetBooks :many
+-- name: SelectBooks :many
 SELECT * FROM books
 ORDER by title;
 
--- name: GetBook :one
+-- name: SelectBook :one
 SELECT * FROM books
 WHERE id=$1 LIMIT 1;
+
+-- name: SelectByTitle :one
+SELECT * FROM books
+WHERE title=$1 LIMIT 1;
 
 -- name: InsertBook :one
 INSERT INTO books (author_id, title, description)
@@ -53,6 +57,16 @@ WHERE id=$1;
 -- name: SeedRoles :exec
 INSERT INTO roles (name)
 VALUES ('admin'), ('user')
+ON CONFLICT DO NOTHING;
+
+-- name: SeedUsers :exec
+INSERT INTO users (user_name, password_hash)
+VALUES ($1, $2)
+ON CONFLICT DO NOTHING;
+
+-- name: SeedUserRoles :exec
+INSERT INTO userroles (user_id, role_id)
+VALUES ($1, $2)
 ON CONFLICT DO NOTHING;
 
 -- name: UserExists :one

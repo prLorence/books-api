@@ -31,7 +31,7 @@ func Create(c *fiber.Ctx, pg *db.Queries) error {
 }
 
 func All(c *fiber.Ctx, pg *db.Queries) error {
-	authors, err := pg.GetAuthors(context.TODO())
+	authors, err := pg.SelectAuthors(context.TODO())
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -51,7 +51,7 @@ func GetById(c *fiber.Ctx, pg *db.Queries) error {
 		})
 	}
 
-	author, err := pg.GetAuthor(context.TODO(), int32(id))
+	author, err := pg.SelectAuthor(context.TODO(), int32(id))
 
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{

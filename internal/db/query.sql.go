@@ -49,90 +49,6 @@ func (q *Queries) DeleteBook(ctx context.Context, id int32) error {
 	return err
 }
 
-const getAuthor = `-- name: GetAuthor :one
-SELECT id, name FROM authors
-WHERE id=$1 LIMIT 1
-`
-
-func (q *Queries) GetAuthor(ctx context.Context, id int32) (Author, error) {
-	row := q.db.QueryRow(ctx, getAuthor, id)
-	var i Author
-	err := row.Scan(&i.ID, &i.Name)
-	return i, err
-}
-
-const getAuthors = `-- name: GetAuthors :many
-SELECT id, name FROM authors
-ORDER BY id
-`
-
-func (q *Queries) GetAuthors(ctx context.Context) ([]Author, error) {
-	rows, err := q.db.Query(ctx, getAuthors)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Author
-	for rows.Next() {
-		var i Author
-		if err := rows.Scan(&i.ID, &i.Name); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getBook = `-- name: GetBook :one
-SELECT id, author_id, title, description FROM books
-WHERE id=$1 LIMIT 1
-`
-
-func (q *Queries) GetBook(ctx context.Context, id int32) (Book, error) {
-	row := q.db.QueryRow(ctx, getBook, id)
-	var i Book
-	err := row.Scan(
-		&i.ID,
-		&i.AuthorID,
-		&i.Title,
-		&i.Description,
-	)
-	return i, err
-}
-
-const getBooks = `-- name: GetBooks :many
-SELECT id, author_id, title, description FROM books
-ORDER by title
-`
-
-func (q *Queries) GetBooks(ctx context.Context) ([]Book, error) {
-	rows, err := q.db.Query(ctx, getBooks)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Book
-	for rows.Next() {
-		var i Book
-		if err := rows.Scan(
-			&i.ID,
-			&i.AuthorID,
-			&i.Title,
-			&i.Description,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getUserHash = `-- name: GetUserHash :one
 SELECT password_hash FROM users
 WHERE id=$1
@@ -208,6 +124,139 @@ ON CONFLICT DO NOTHING
 func (q *Queries) SeedRoles(ctx context.Context) error {
 	_, err := q.db.Exec(ctx, seedRoles)
 	return err
+}
+
+const seedUserRoles = `-- name: SeedUserRoles :exec
+INSERT INTO userroles (user_id, role_id)
+VALUES ($1, $2)
+ON CONFLICT DO NOTHING
+`
+
+type SeedUserRolesParams struct {
+	UserID int32
+	RoleID int32
+}
+
+func (q *Queries) SeedUserRoles(ctx context.Context, arg SeedUserRolesParams) error {
+	_, err := q.db.Exec(ctx, seedUserRoles, arg.UserID, arg.RoleID)
+	return err
+}
+
+const seedUsers = `-- name: SeedUsers :exec
+INSERT INTO users (user_name, password_hash)
+VALUES ($1, $2)
+ON CONFLICT DO NOTHING
+`
+
+type SeedUsersParams struct {
+	UserName     string
+	PasswordHash string
+}
+
+func (q *Queries) SeedUsers(ctx context.Context, arg SeedUsersParams) error {
+	_, err := q.db.Exec(ctx, seedUsers, arg.UserName, arg.PasswordHash)
+	return err
+}
+
+const selectAuthor = `-- name: SelectAuthor :one
+SELECT id, name FROM authors
+WHERE id=$1 LIMIT 1
+`
+
+func (q *Queries) SelectAuthor(ctx context.Context, id int32) (Author, error) {
+	row := q.db.QueryRow(ctx, selectAuthor, id)
+	var i Author
+	err := row.Scan(&i.ID, &i.Name)
+	return i, err
+}
+
+const selectAuthors = `-- name: SelectAuthors :many
+SELECT id, name FROM authors
+ORDER BY id
+`
+
+func (q *Queries) SelectAuthors(ctx context.Context) ([]Author, error) {
+	rows, err := q.db.Query(ctx, selectAuthors)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Author
+	for rows.Next() {
+		var i Author
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const selectBook = `-- name: SelectBook :one
+SELECT id, author_id, title, description FROM books
+WHERE id=$1 LIMIT 1
+`
+
+func (q *Queries) SelectBook(ctx context.Context, id int32) (Book, error) {
+	row := q.db.QueryRow(ctx, selectBook, id)
+	var i Book
+	err := row.Scan(
+		&i.ID,
+		&i.AuthorID,
+		&i.Title,
+		&i.Description,
+	)
+	return i, err
+}
+
+const selectBooks = `-- name: SelectBooks :many
+SELECT id, author_id, title, description FROM books
+ORDER by title
+`
+
+func (q *Queries) SelectBooks(ctx context.Context) ([]Book, error) {
+	rows, err := q.db.Query(ctx, selectBooks)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Book
+	for rows.Next() {
+		var i Book
+		if err := rows.Scan(
+			&i.ID,
+			&i.AuthorID,
+			&i.Title,
+			&i.Description,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const selectByTitle = `-- name: SelectByTitle :one
+SELECT id, author_id, title, description FROM books
+WHERE title=$1 LIMIT 1
+`
+
+func (q *Queries) SelectByTitle(ctx context.Context, title string) (Book, error) {
+	row := q.db.QueryRow(ctx, selectByTitle, title)
+	var i Book
+	err := row.Scan(
+		&i.ID,
+		&i.AuthorID,
+		&i.Title,
+		&i.Description,
+	)
+	return i, err
 }
 
 const updateAuthor = `-- name: UpdateAuthor :exec
