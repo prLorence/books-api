@@ -67,6 +67,18 @@ func GetById(c *fiber.Ctx, pg *db.Queries) error {
 	return c.JSON(book)
 }
 
+func GetByTitle(c *fiber.Ctx, pg *db.Queries) error {
+	title := c.Params("title")
+	book, err := pg.SelectByTitle(context.TODO(), title)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"errors": err.Error(),
+		})
+	}
+
+	return c.JSON(book)
+}
+
 func Update(c *fiber.Ctx, pg *db.Queries) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
