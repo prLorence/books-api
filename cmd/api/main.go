@@ -6,19 +6,12 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/gofiber/storage/postgres/v3"
 	"github.com/prLorence/books-api/config"
 	"github.com/prLorence/books-api/internal/db"
 	"github.com/prLorence/books-api/internal/utils"
 )
-
-// middleware, for authorization
-// decoder from request to application struct
-// db connection string comes from os.env, which come from config struct, might need an if statement for dev purposes
-// session manager
-// a seeder
 
 func main() {
 	config := config.NewConfig()
@@ -28,14 +21,17 @@ func main() {
 	}
 
 	srv := &utils.Server{
-		App:     fiber.New(),
-		DB:      db.New(conn),
-		Session: session.New(),
+		App: fiber.New(),
+		DB:  db.New(conn),
+		// gofiber's postgresql driver for session storage
+		Session: postgres.New(postgres.Config{
+			ConnectionURI: config.DB_CONN,
+		}),
 	}
 	srv.App.Use(cors.New())
-	srv.App.Use(adaptor.HTTPMiddleware(srv.RequireAuth))
 
-	// Routes(srv.App, srv.DB, srv.Session)
+	log.Println("Seeding users")
+	utils.SeedUsers(srv)
 	Routes(srv)
 
 	fmt.Fprintf(os.Stdout, "Listening on host port %s", config.HOST_PORT)
