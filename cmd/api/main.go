@@ -7,8 +7,10 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/prLorence/books-api/config"
 	"github.com/prLorence/books-api/internal/db"
+	"github.com/prLorence/books-api/internal/utils"
 )
 
 // middleware, for authorization
@@ -23,6 +25,8 @@ type Application struct {
 func main() {
 	app := fiber.New()
 	app.Use(cors.New())
+	app.Use(utils.RequireAuth)
+	sess := session.New()
 
 	config := config.NewConfig()
 	conn, err := db.ConnectDB(config.DB_CONN)
@@ -32,7 +36,7 @@ func main() {
 
 	db := db.New(conn)
 
-	Routes(app, db)
+	Routes(app, db, sess)
 
 	fmt.Fprintf(os.Stdout, "Listening on host port %s", config.HOST_PORT)
 	err = app.Listen(fmt.Sprintf(":%s", config.APP_PORT))
