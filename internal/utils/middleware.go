@@ -1,39 +1,46 @@
 package utils
 
 import (
-	"net/http"
+	"context"
+
+	"github.com/gofiber/fiber/v2"
 )
 
-func (s *Server) RequireAuth(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// get the id
-		// if id == 0, return status forbidden
-		// if !db.IsAdmin(id), return status forbidden
-		// return next
-		if IsAuthorized(r) {
-			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
-			return
-		}
+func (s *Server) RequireAuth(c *fiber.Ctx) error {
+	store := s.Session
 
-		w.Header().Add("Cache-Control", "no-store")
+	id, _ := store.Get("userId")
+	if BytesToInt32(id) == 0 {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "You are not logged in",
+		})
+	}
 
-		next.ServeHTTP(w, r)
-	})
+	return c.Next()
 }
 
-func (s *Server) RequireAdmin(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// get the id
-		// if id == 0, return status forbidden
-		// if !db.IsAdmin(id), return status forbidden
-		// return next
-		if IsAuthorized(r) {
-			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
-			return
-		}
+func (s *Server) RequireAdmin(c *fiber.Ctx) error {
+	store := s.Session
 
-		w.Header().Add("Cache-Control", "no-store")
+	idInBytes, err := store.Get("userId")
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "You are not logged in",
+		})
+	}
 
-		next.ServeHTTP(w, r)
-	})
+	isAdmin, err := s.DB.IsAdmin(context.TODO(), BytesToInt32(idInBytes))
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"errors": err.Error(),
+		})
+	}
+
+	if !isAdmin {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"message": "You don't have permissions to access this resource",
+		})
+	}
+
+	return c.Next()
 }
